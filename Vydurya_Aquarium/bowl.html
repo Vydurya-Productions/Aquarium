@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inverted Fish Bowl Scroller</title>
+    <style>
+        /* INVERTED FISH BOWL (OPENING FACING DOWN) */
+        .fish-bowl-indicator {
+            position: fixed;
+            right: 30px;
+            bottom: 100px;
+            z-index: 99;
+            width: 70px; /* Adjusted to match bowl width */
+            height: 100px;
+        }
+        
+        .fish-bowl {
+            width: 70px; /* Reduced from 80px */
+            height: 60px;
+            border-radius: 80% 80% 40% 40%; /* Increased top radius for more roundness */
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            border-top: none;
+            position: relative;
+            overflow: hidden;
+            background: rgba(10, 35, 66, 0.3);
+            box-shadow: 0 -10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .fish-bowl-water {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to bottom, #1e88e5, #4fc3f7);
+            transition: height 0.1s linear;
+            border-radius: 0 0 50% 50%;
+        }
+        
+        /* Bubbles rise upward (toward bowl opening at bottom) */
+        .bowl-bubble {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            animation: bowl-float linear infinite;
+            z-index: 1;
+        }
+        
+        @keyframes bowl-float {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            10% { opacity: 0.7; }
+            100% { transform: translateY(60px) scale(1); opacity: 0; }
+        }
+        
+        /* Fish swims upside down */
+        .goldfish {
+            position: absolute;
+            width: 25px;
+            height: 15px;
+            background: linear-gradient(135deg, #FFC107, #FF9800);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(180deg);
+            animation: fish-swim-bowl 5s infinite ease-in-out;
+            z-index: 2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .goldfish::before {
+            content: "";
+            position: absolute;
+            top: 30%;
+            left: -5px;
+            width: 0;
+            height: 0;
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+            border-right: 10px solid #FF9800;
+            border-left: none;
+            filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.3));
+        }
+        
+        .goldfish::after {
+            content: "";
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 3px;
+            height: 3px;
+            background: #0A2342;
+            border-radius: 50%;
+        }
+        
+        @keyframes fish-swim-bowl {
+            0%, 100% { transform: translate(-50%, -50%) translateX(-10px) rotate(180deg); }
+            25% { transform: translate(-50%, -50%) translateX(10px) translateY(-5px) rotate(180deg); }
+            50% { transform: translate(-50%, -50%) translateX(10px) translateY(5px) rotate(0deg); }
+            75% { transform: translate(-50%, -50%) translateX(-10px) translateY(5px) rotate(0deg); }
+        }
+        
+        .fish-bowl-stand {
+            width: 40px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            margin: 5px auto 0;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="fish-bowl-indicator">
+        <div class="fish-bowl-stand"></div>
+        <div class="fish-bowl">
+            <div class="fish-bowl-water" id="fishBowlWater"></div>
+            <div id="bowlBubbles"></div>
+            <div class="goldfish"></div>
+        </div>
+    </div>
+
+    <div style="height: 2000px; background: linear-gradient(#f5f7fa, #c3cfe2);"></div>
+
+    <script>
+        function createBowlBubbles() {
+            const container = document.getElementById('bowlBubbles');
+            const bubbleCount = 8;
+            
+            for (let i = 0; i < bubbleCount; i++) {
+                const bubble = document.createElement('div');
+                bubble.classList.add('bowl-bubble');
+                
+                const size = Math.random() * 5 + 3;
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                bubble.style.left = `${Math.random() * 80 + 10}%`;
+                bubble.style.top = `${Math.random() * 30}%`;
+                
+                const duration = Math.random() * 5 + 3;
+                bubble.style.animationDuration = `${duration}s`;
+                bubble.style.animationDelay = `${Math.random() * 5}s`;
+                
+                container.appendChild(bubble);
+            }
+        }
+
+        window.addEventListener('scroll', function() {
+            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrollProgress = (scrollTop / scrollHeight) * 100;
+            
+            document.getElementById('fishBowlWater').style.height = `${Math.min(scrollProgress, 100)}%`;
+        });
+
+        window.addEventListener('load', createBowlBubbles);
+    </script>
+</body>
+</html>
